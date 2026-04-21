@@ -10,7 +10,6 @@ COPY package*.json ./
 RUN npm install
 
 # COPIAMOS EL RESTO DEL PROYECTO 
-# (OJO: En el PDF falta el punto, ponlo así: )
 COPY . .
 
 # Exponemos el puerto en el que corre la app
