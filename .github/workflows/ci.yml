@@ -26,3 +26,14 @@ jobs:
 
       - name: Escaneo de dependencias
         run: npm audit || true
+
+      - name: Escaneo SAST con Semgrep
+        run: |
+          python3 -m pip install semgrep
+          semgrep --config auto . || true
+
+      - name: Escaneo DAST con ZAP
+        run: |
+          npm start &
+          sleep 10
+          docker run --rm -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://localhost:3001 || true
