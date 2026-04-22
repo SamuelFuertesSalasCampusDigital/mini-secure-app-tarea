@@ -1,4 +1,4 @@
-name: Continuous Deployment
+name: CD Despliegue
 
 on:
   push:
@@ -7,14 +7,25 @@ on:
 
 jobs:
   deploy:
-    runs-on: self-hosted  # <--- Esto es lo más importante
+    runs-on: self-hosted
     steps:
-      - name: Checkout repository
+      - name: Checkout del código
         uses: actions/checkout@v4
 
-      - name: Build and run Docker container
-        run: |
-          docker stop mini-secure-app || true
-          docker rm mini-secure-app || true
-          docker build -t mini-secure-app .
-          docker run -d --name mini-secure-app -p 3001:3001 mini-secure-app
+      - name: Parar despliegue anterior
+        run: docker-compose down || true
+
+      - name: Construir y levantar aplicación
+        run: docker-compose up -d --build
+
+      - name: Ver contenedores
+        run: docker ps
+
+      - name: Ver logs
+        run: docker logs mini-secure-app --tail 50
+
+      - name: Esperar a que arranque la aplicacion
+        run: sleep 10
+
+      - name: Comprobar aplicación
+        run: curl http://localhost:3001
