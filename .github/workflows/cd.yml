@@ -8,9 +8,19 @@ on:
 jobs:
   deploy:
     runs-on: self-hosted
+    # Forzamos a que todos los pasos se ejecuten en la raíz del repo
+    defaults:
+      run:
+        working-directory: ./
+    
     steps:
       - name: Checkout del código
         uses: actions/checkout@v4
+        with:
+          clean: true  # Esto limpia rastro de archivos viejos
+
+      - name: ¿Qué archivos ve el Runner?
+        run: ls -la
 
       - name: Parar despliegue anterior
         run: docker-compose down || true
