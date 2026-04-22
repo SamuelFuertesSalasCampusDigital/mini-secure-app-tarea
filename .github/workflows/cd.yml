@@ -8,25 +8,25 @@ on:
 jobs:
   deploy:
     runs-on: self-hosted
-    # Forzamos a que todos los pasos se ejecuten en la raíz del repo
-    defaults:
-      run:
-        working-directory: ./
-    
     steps:
       - name: Checkout del código
         uses: actions/checkout@v4
         with:
-          clean: true  # Esto limpia rastro de archivos viejos
+          clean: true
 
-      - name: ¿Qué archivos ve el Runner?
-        run: ls -la
+      - name: Debug - Ver donde estamos
+        run: |
+          pwd
+          ls -la
 
       - name: Parar despliegue anterior
-        run: docker-compose down || true
+        run: |
+          docker-compose down || docker compose down || true
 
       - name: Construir y levantar aplicación
-        run: docker-compose up -d --build
+        run: |
+          # Intentamos con guion y sin guion por si la version de docker cambio
+          docker-compose up -d --build || docker compose up -d --build
 
       - name: Ver contenedores
         run: docker ps
@@ -34,7 +34,7 @@ jobs:
       - name: Ver logs
         run: docker logs mini-secure-app --tail 50
 
-      - name: Esperar a que arranque la aplicacion
+      - name: Esperar a que arranque
         run: sleep 10
 
       - name: Comprobar aplicación
