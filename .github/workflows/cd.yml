@@ -1,0 +1,20 @@
+name: Continuous Deployment
+
+on:
+  push:
+    branches:
+      - desarrollo
+
+jobs:
+  deploy:
+    runs-on: self-hosted  # <--- Esto es lo más importante
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build and run Docker container
+        run: |
+          docker stop mini-secure-app || true
+          docker rm mini-secure-app || true
+          docker build -t mini-secure-app .
+          docker run -d --name mini-secure-app -p 3001:3001 mini-secure-app
