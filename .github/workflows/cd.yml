@@ -14,9 +14,11 @@ jobs:
         with:
           clean: true
 
-      - name: Debug - Ver donde estamos
+      - name: Debug - Ver donde estamos y que archivos hay
         run: |
+          echo "Directorio actual:"
           pwd
+          echo "Lista de archivos:"
           ls -la
 
       - name: Parar despliegue anterior
@@ -25,17 +27,17 @@ jobs:
 
       - name: Construir y levantar aplicación
         run: |
-          # Intentamos con guion y sin guion por si la version de docker cambio
-          docker-compose up -d --build || docker compose up -d --build
+          # Forzamos la ruta al archivo actual para que no haya dudas
+          docker-compose -f ./docker-compose.yml up -d --build || docker compose -f ./docker-compose.yml up -d --build
 
-      - name: Ver contenedores
+      - name: Ver contenedores activos
         run: docker ps
 
-      - name: Ver logs
+      - name: Ver logs de la app
         run: docker logs mini-secure-app --tail 50
 
-      - name: Esperar a que arranque
+      - name: Esperar a que arranque la aplicacion
         run: sleep 10
 
       - name: Comprobar aplicación
-        run: curl http://localhost:3001
+        run: curl -I http://localhost:3001
