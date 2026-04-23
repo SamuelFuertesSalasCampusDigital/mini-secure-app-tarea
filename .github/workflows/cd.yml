@@ -1,4 +1,4 @@
-name: CD Despliegue
+name: CD - Despliegue
 
 on:
   push:
@@ -11,33 +11,21 @@ jobs:
     steps:
       - name: Checkout del código
         uses: actions/checkout@v4
-        with:
-          clean: true
-
-      - name: Debug - Ver donde estamos y que archivos hay
-        run: |
-          echo "Directorio actual:"
-          pwd
-          echo "Lista de archivos:"
-          ls -la
 
       - name: Parar despliegue anterior
-        run: |
-          docker-compose down || docker compose down || true
+        run: docker-compose down || true
 
       - name: Construir y levantar aplicación
-        run: |
-          # Forzamos la ruta al archivo actual para que no haya dudas
-          docker-compose -f ./docker-compose.yml up -d --build || docker compose -f ./docker-compose.yml up -d --build
+        run: docker-compose up -d --build
 
-      - name: Ver contenedores activos
+      - name: Ver contenedores
         run: docker ps
 
-      - name: Ver logs de la app
+      - name: Ver logs
         run: docker logs mini-secure-app --tail 50
 
       - name: Esperar a que arranque la aplicacion
         run: sleep 10
 
       - name: Comprobar aplicación
-        run: curl -I http://localhost:3001
+        run: curl http://localhost:3001
