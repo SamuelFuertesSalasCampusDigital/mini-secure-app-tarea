@@ -25,7 +25,7 @@ jobs:
         run: docker logs mini-secure-app --tail 50
 
       - name: Esperar a que arranque la aplicacion
-        run: sleep 10
+        run: sleep 15
 
       - name: Comprobar aplicación
         run: curl http://localhost:3001
