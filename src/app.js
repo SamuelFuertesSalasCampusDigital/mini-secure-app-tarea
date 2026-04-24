@@ -110,26 +110,23 @@ app.post('/login', (req, res) => {
 
 // Listado de tickets
 app.get('/tickets', (req, res) => {
-  const q = req.query.q || '';
-  const safeQ = xss(q);
-  
-  const safeItems = tickets.map(t => {
-    return '<li>' + xss(t.title) + ' - ' + xss(t.description) + '</li>';
-  }).join('');
+  // 1. Limpiamos cada dato individualmente
+  const safeTickets = tickets.map(t => ({
+    title: xss(t.title),
+    desc: xss(t.description)
+  }));
 
-  const inicio = '<html><head><title>Tickets</title></head><body>';
-  
-  // CAMBIA ESTA LÍNEA: debe decir "Listado de tickets" para que el test pase
-  const header = '<h1>Listado de tickets</h1>'; 
-  
-  // Si quieres mantener lo de la búsqueda, puedes ponerlo debajo o simplemente dejar el listado
-  const subHeader = safeQ ? '<h2>Resultados para: ' + safeQ + '</h2>' : '';
-  
-  const list = '<ul>' + safeItems + '</ul>';
-  const link = '<p><a href="/">Volver</a></p>';
-  const fin = '</body></html>';
+  // 2. Creamos el HTML en una variable simple sin lógica compleja dentro
+  let htmlContent = '<h1>Listado de tickets</h1><ul>';
 
-  res.send(inicio + header + subHeader + list + link + fin);
+  safeTickets.forEach(t => {
+    htmlContent += '<li><strong>' + t.title + '</strong> - ' + t.desc + '</li>';
+  });
+
+  htmlContent += '</ul><p><a href="/">Volver</a></p>';
+
+  // 3. Enviamos
+  res.status(200).send(htmlContent);
 });
 
 // Formulario nuevo ticket
