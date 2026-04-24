@@ -28,17 +28,22 @@ app.use(cookieParser());
 app.use(csrf({ cookie: true }));
 
 // Middleware para pasar el token CSRF a las vistas (esto "engaña" a Semgrep y protege de verdad)
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser()); // <--- PRIMERO ESTO
+
 const csrfProtection = csrf({ cookie: true });
 
 app.use((req, res, next) => {
-  if (process.env.NODE_ENV === 'test' || typeof jest !== 'undefined') {
+  if (process.env.NODE_ENV === 'test') {
     return next();
   }
-  csrfProtection(req, res, next);
+  return csrfProtection(req, res, next);
 });
 
 app.use((req, res, next) => {
-  res.locals.csrftoken = req.csrfToken() ? req.csrfToken() : null;
+  if (req.csrfToken) {
+    res.locals.csrfToken = req.csrfToken();
+  }
   next();
 });
 const PORT = process.env.PORT || 3001;
