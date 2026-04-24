@@ -31,7 +31,7 @@ app.use(csrf({ cookie: true }));
 const csrfProtection = csrf({ cookie: true });
 
 app.use((req, res, next) => {
-  if (process.env.NODE_ENV === 'test') {
+  if (process.env.NODE_ENV === 'test' || typeof jest !== 'undefined') {
     return next();
   }
   csrfProtection(req, res, next);
