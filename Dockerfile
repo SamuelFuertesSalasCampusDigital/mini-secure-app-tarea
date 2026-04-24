@@ -15,5 +15,8 @@ COPY . .
 # Exponemos el puerto en el que corre la app
 EXPOSE 3001
 
+# AÑADIMOS ESTA LÍNEA AQUÍ:
+USER node
+
 # Comando para arrancar la aplicación
 CMD ["npm", "start"]

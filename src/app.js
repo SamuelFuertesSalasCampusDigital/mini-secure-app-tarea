@@ -1,6 +1,9 @@
 const express = require('express');
+const hemlt = require('helmet');
 
 const app = express();
+app.use(helmet());
+app.disable('x-powered-by');
 const PORT = process.env.PORT || 3001;
 
 app.use(express.urlencoded({ extended: true }));
