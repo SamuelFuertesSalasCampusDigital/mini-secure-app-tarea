@@ -37,15 +37,14 @@ const csrfProtection = csrf({ cookie: true });
 // 2. Modificamos la aplicación para que no bloquee nada
 app.use((req, res, next) => {
   // Comentamos la línea que ejecuta la protección real
-  // return csrfProtection(req, res, next); 
-  
+  // return csrfProtection(req, res, next);
   // Dejamos que pase siempre
-  return next(); 
+  return next();
 });
 
 // 3. Mantenemos el token dummy para que no haya errores de "undefined"
 app.use((req, res, next) => {
-  res.locals.csrfToken = "test-token"; 
+  res.locals.csrfToken = "test-token";
   next();
 });
 const PORT = process.env.PORT || 3001;
