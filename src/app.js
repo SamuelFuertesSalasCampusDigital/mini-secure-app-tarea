@@ -39,7 +39,7 @@ app.use((req, res, next) => {
   // Comentamos la línea que ejecuta la protección real
   // return csrfProtection(req, res, next);
   // Dejamos que pase siempre
-  return next();
+  next();
 });
 
 // 3. Mantenemos el token dummy para que no haya errores de "undefined"
