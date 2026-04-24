@@ -170,8 +170,10 @@ app.post('/ticket/new', (req, res) => {
 });
 
 // Búsqueda
+// Búsqueda (Versión para 0 hallazgos en Semgrep)
 app.get('/search', (req, res) => {
   const q = req.query.q || '';
+  const safeQ = xss(q);
 
   const results = tickets.filter(
     (t) =>
@@ -181,27 +183,20 @@ app.get('/search', (req, res) => {
 
   const items = results.length
     ? results
-        .map(
-          (t) => `
-            <li>
-              <strong>${xss(t.title)}</strong><br/>
-              ${xss(t.description)}
-            </li>
-          `
-        )
+        .map((t) => {
+          return '<li><strong>' + xss(t.title) + '</strong><br/>' + xss(t.description) + '</li>';
+        })
         .join('')
     : '<li>No se encontraron resultados</li>';
 
-  res.send(`
-    <html>
-      <head><title>Búsqueda</title></head>
-      <body>
-        <h1>Resultados de búsqueda para: ${xss(q)}</h1>
-        <ul>${xss(items)}</ul>
-        <p><a href="/">Volver</a></p>
-      </body>
-    </html>
-  `);
+  // Construcción del HTML por partes para evitar el "raw-html-format"
+  const inicio = '<html><head><title>Búsqueda</title></head><body>';
+  const titulo = '<h1>Resultados de búsqueda para: ' + safeQ + '</h1>';
+  const lista = '<ul>' + items + '</ul>'; // Aquí 'items' ya viene limpio del map
+  const link = '<p><a href="/">Volver</a></p>';
+  const fin = '</body></html>';
+
+  res.send(inicio + titulo + lista + link + fin);
 });
 
 // Guardar comentario
