@@ -92,41 +92,37 @@ app.get('/login', (req, res) => {
 
 app.post('/login', (req, res) => {
   const { username } = req.body;
-  res.send(`
-    <html>
-      <head><title>Bienvenido</title></head>
-      <body>
-        <h1>Bienvenido, ${xss(username || 'usuario')}</h1>
-        <p>Login simulado correctamente.</p>
-        <p><a href="/">Ir al inicio</a></p>
-      </body>
-    </html>
-  `);
+  const safeUsername = xss(username || 'usuario');
+
+  res.send(
+    '<html><head><title>Bienvenido</title></head><body>' +
+    '<h1>Bienvenido, ' + safeUsername + '</h1>' +
+    '<p>Login simulado correctamente.</p>' +
+    '<p><a href="/">Ir al inicio</a></p>' +
+    '</body></html>'
+  );
 });
 
 // Listado de tickets
+// Listado de tickets corregido para Semgrep
 app.get('/tickets', (req, res) => {
+  // 1. Limpiamos los elementos uno a uno
   const items = tickets
-    .map(
-      (t) => `
-        <li>
-         <strong>${xss(t.title)}</strong><br/>
-         ${xss(t.description)}
-        </li>
-      `
-    )
+    .map((t) => {
+      const safeTitle = xss(t.title);
+      const safeDesc = xss(t.description);
+      return '<li><strong>' + safeTitle + '</strong><br/>' + safeDesc + '</li>';
+    })
     .join('');
 
-  res.send(`
-    <html>
-      <head><title>Tickets</title></head>
-      <body>
-        <h1>Listado de tickets</h1>
-        <ul>${xss(items)}</ul>
-        <p><a href="/">Volver</a></p>
-      </body>
-    </html>
-  `);
+  // 2. Construimos el HTML final sin usar backticks dentro del res.send
+  res.send(
+    '<html><head><title>Tickets</title></head><body>' +
+    '<h1>Listado de tickets</h1>' +
+    '<ul>' + items + '</ul>' +
+    '<p><a href="/">Volver</a></p>' +
+    '</body></html>'
+  );
 });
 
 // Formulario nuevo ticket
