@@ -30,7 +30,7 @@ app.use(csrf({ cookie: true }));
 // Middleware para pasar el token CSRF a las vistas (esto "engaña" a Semgrep y protege de verdad)
 const csrfProtection = csrf({ cookie: true });
 
-app.use((req, res, net) => {
+app.use((req, res, next) => {
   if (process.env.NODE_ENV === 'test') {
     return next();
   }
